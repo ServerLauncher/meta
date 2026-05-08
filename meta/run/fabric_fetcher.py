@@ -104,7 +104,6 @@ class FabricFetcher(BaseFetcher):
             logger.debug(f"[Fabric] No loaders for {mc_version}")
             return None
 
-        logger.info(f"[Fabric] Fetching metadata for {len(loader_entries)} loaders in {mc_version}...")
         semaphore = asyncio.Semaphore(20)
 
         async def fetch_metadata(entry: FabricLoaderEntry):
