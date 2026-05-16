@@ -15,7 +15,7 @@ from meta.models.java_model import (
 ADOPTIUM_API = "https://api.adoptium.net/v3/assets/feature_releases/{major}/ga?image_type=jre"
 MOJANG_JAVA_URL = ("https://piston-meta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json")
 
-JAVA_MAJORS = [8, 11, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+JAVA_MAJORS = [8, 11, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
 MOJANG_COMPONENTS = {
     "jre-legacy": 8,
