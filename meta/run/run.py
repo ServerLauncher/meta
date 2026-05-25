@@ -9,6 +9,7 @@ from meta.run.mojang_fetcher import MojangFetcher
 from meta.run.paper_fetcher import PaperFetcher
 from meta.run.purpur_fetcher import PurpurFetcher
 from meta.run.fabric_fetcher import FabricFetcher
+from meta.run.neoforge_fetcher import NeoForgeFetcher
 from meta.run.java_fetcher import MojangJavaFetcher, AdoptiumJavaFetcher
 from meta.models import MetaIndex, MetaIndexEntry
 from meta.common import sha256, write_json
@@ -18,7 +19,7 @@ logging.basicConfig(level=logging.INFO)
 async def main():
     logging.info("Starting meta build process")
 
-    fetchers = [MojangFetcher(), PaperFetcher(), PurpurFetcher(), 
+    fetchers = [MojangFetcher(), PaperFetcher(), PurpurFetcher(), NeoForgeFetcher(),
                 FabricFetcher(), MojangJavaFetcher(), AdoptiumJavaFetcher()]
     os.makedirs("dist", exist_ok=True)
     output = Path("dist")
