@@ -1,4 +1,5 @@
 import aiohttp
+import asyncio
 import logging
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -20,17 +21,23 @@ class BaseFetcher(ABC):
             )
         return self._session
     
-    async def get(self, url: str) -> Optional[str]:
+    async def get(self, url: str, retries: int = 3) -> Optional[str]:
         session = await self._get_session()
-        try:
-            async with session.get(url) as resp:
-                if resp.status != 200:
-                    logging.error(f"Failed to GET {url}, status={resp.status}")
+        for attempt in range(retries):
+            try:
+                async with session.get(url) as resp:
+                    if resp.status != 200:
+                        logging.error(f"Failed to GET {url}, status={resp.status}")
+                        return None
+                    return await resp.text()
+            except Exception as e:
+                if attempt < retries - 1:
+                    wait = 2 ** attempt
+                    logging.warning(f"Retrying {url} in {wait}s (attempt {attempt + 1}): {e}")
+                    await asyncio.sleep(wait)
+                else:
+                    logging.error(f"Request failed after {retries} attempts: {e}")
                     return None
-                return await resp.text()
-        except Exception as e:
-            logging.error(f"Request failed: {e}")
-            return None
         
     async def get_json(self, url) -> Optional[dict | list]:
         import json
