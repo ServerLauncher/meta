@@ -49,6 +49,21 @@ class BaseFetcher(ABC):
         except json.JSONDecodeError as e:
             logging.error(f"Failed to parse JSON for {url}: {e}")
 
+    async def head(self, url: str) -> Optional[dict]:
+        session = await self._get_session()
+        for attempt in range(3):
+            try:
+                async with session.head(url) as resp:
+                    if resp.status != 200:
+                        return None
+                    return dict(resp.headers)
+            except Exception as e:
+                if attempt < 2:
+                    await asyncio.sleep(2 ** attempt)
+                else:
+                    logging.error(f"HEAD request failed: {e}")
+                    return None
+
     async def close(self):
         logging.info('Closing session')
         if self._session and not self._session.closed:
