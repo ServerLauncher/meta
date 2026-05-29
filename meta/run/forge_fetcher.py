@@ -36,7 +36,7 @@ def _has_installer(mc_version: str) -> bool:
 class ForgeFetcher(BaseFetcher):
     platform_id = "forge"
     platform_name = "Forge"
-    platform_uid = "net.minecraftforge.forge"
+    platform_uid = "net.minecraftforge"
 
     async def fetch(self) -> Optional[tuple[ForgeMetaVersion, dict[str, ForgeMetaVersionFile]]]:
         logger.info("[Forge] Fetching Forge versions...")
