@@ -20,9 +20,8 @@ logging.basicConfig(level=logging.INFO)
 async def main():
     logging.info("Starting meta build process")
 
-    # fetchers = [MojangFetcher(), PaperFetcher(), PurpurFetcher(), NeoForgeFetcher(),
-    #             FabricFetcher(), MojangJavaFetcher(), AdoptiumJavaFetcher(), ForgeFetcher()]
-    fetchers = [ForgeFetcher()]
+    fetchers = [MojangFetcher(), PaperFetcher(), PurpurFetcher(), NeoForgeFetcher(),
+                FabricFetcher(), MojangJavaFetcher(), AdoptiumJavaFetcher(), ForgeFetcher()]
     os.makedirs("dist", exist_ok=True)
     output = Path("dist")
 
