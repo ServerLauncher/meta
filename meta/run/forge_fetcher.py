@@ -106,7 +106,7 @@ class ForgeFetcher(BaseFetcher):
             uid=self.platform_uid,
             name=self.platform_name,
             recommended=recommended,
-            versions=version_entries,
+            versions=version_entries.reverse(),
         )
 
         return package, version_files
