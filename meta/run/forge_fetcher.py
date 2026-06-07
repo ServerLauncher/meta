@@ -102,11 +102,13 @@ class ForgeFetcher(BaseFetcher):
 
         logger.info(f"[Forge] Processed {len(version_entries)} MC versions")
 
+        version_entries.reverse()
+
         package = ForgeMetaVersion(
             uid=self.platform_uid,
             name=self.platform_name,
             recommended=recommended,
-            versions=version_entries.reverse(),
+            versions=version_entries,
         )
 
         return package, version_files
