@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 
 def sha256(data: str) -> str:
-    return hashlib.sha256(data.encode()).hexdigest()
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 def write_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)

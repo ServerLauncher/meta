@@ -49,7 +49,7 @@ async def main():
             for mc_version, version_file in versions_files.items():
                 try:
                     version_json = version_file.model_dump(by_alias=True)
-                    version_str = json.dumps(version_json)
+                    version_str = json.dumps(version_json, indent=2, ensure_ascii=False)
 
                     for entry in package.versions:
                         if getattr(entry, "mc_version", None) == mc_version or getattr(entry, "java_version", None) == mc_version:
@@ -65,7 +65,7 @@ async def main():
             logging.info(f"Writing package.json for {uid}")
 
             package_json = package.model_dump(by_alias=True)
-            package_str = json.dumps(package_json)
+            package_str = json.dumps(package_json, indent=2, ensure_ascii=False)
 
             write_json(platform_dir / "package.json", package_json)
 
