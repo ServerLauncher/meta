@@ -66,8 +66,6 @@ class PaperFetcher(BaseFetcher):
                 recommended.append(mc_version)
 
         logger.info(f"[Paper] Processed {len(version_entries)} MC versions")
-        
-        version_entries.reverse()
 
         package = PaperMetaVersion(
             uid=self.platform_id,
