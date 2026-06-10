@@ -1,6 +1,8 @@
 import logging
 import asyncio
+import re
 from typing import Optional
+from packaging.version import Version
 
 from meta.run.base_fetcher import BaseFetcher
 from meta.models.paper_model import (
@@ -21,6 +23,9 @@ class PaperFetcher(BaseFetcher):
     platform_name = "Paper"
     platform_uid = "io.papermc.paper"
 
+    def _is_stable_version(self, version: str) -> bool:
+        return not re.search(r'-(rc|beta|alpha|snapshot)', version, re.IGNORECASE)
+
     async def fetch(self) -> Optional[tuple[PaperMetaVersion, dict[str, PaperMetaVersionFile]]]:
         logger.info("[Paper] Fetching project info...")
         
@@ -30,8 +35,16 @@ class PaperFetcher(BaseFetcher):
             return None
 
         project = PaperProjectResponse(**raw_project)
-        mc_versions = list(reversed(project.versions))
-        logger.info(f"[Paper] Loaded {len(mc_versions)} MC versions")
+        
+        stable_versions = [v for v in project.versions if self._is_stable_version(v)]
+        
+        mc_versions = sorted(
+            stable_versions,
+            key=lambda v: Version(v),
+            reverse=True
+        )
+        
+        logger.info(f"[Paper] Loaded {len(mc_versions)} stable MC versions. Latest: {mc_versions[0] if mc_versions else 'N/A'}")
 
         semaphore = asyncio.Semaphore(10)
 
@@ -51,21 +64,24 @@ class PaperFetcher(BaseFetcher):
                 logger.debug(f"[Paper] Skipping {mc_version} (no builds)")
                 continue
 
-            latest_build = version_file.builds[0].build if version_file.builds else ""
+            latest_build = max(int(b.build) for b in version_file.builds) if version_file.builds else 0
 
             version_files[mc_version] = version_file
 
             version_entries.append(PaperMetaVersionEntry(
-                    mcVersion=mc_version,
-                    latestBuild=latest_build,
-                    sha256="",
-                    url=f"{self.platform_uid}/{mc_version}.json"
-                )
-            )
+                mc_version=mc_version,
+                latest_build=str(latest_build),
+                sha256="",
+                url=f"{self.platform_uid}/{mc_version}.json"
+            ))
+            
             if not recommended:
                 recommended.append(mc_version)
 
         logger.info(f"[Paper] Processed {len(version_entries)} MC versions")
+        
+        if version_entries:
+            logger.info(f"[Paper] Order: {version_entries[0].mc_version} → ...")
 
         package = PaperMetaVersion(
             uid=self.platform_id,
