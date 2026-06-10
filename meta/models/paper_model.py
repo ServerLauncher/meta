@@ -66,23 +66,23 @@ class PaperMetaVersionFile(MetaVersionFile):
     @classmethod
     def from_paper_builds(cls, mc_version: str, builds: list[PaperBuild], uid: str) -> "PaperMetaVersionFile":
         meta_builds = []
-        marked_recommended = False
-
-        for b in builds:
+        
+        for b in reversed(builds):
             if not b.application:
                 continue
 
-            is_recommended = False
-            if not marked_recommended and (b.promoted or b.is_stable):
-                is_recommended = True
-                marked_recommended = True
-
-            meta_build = PaperMetaBuild.from_paper(mc_version=mc_version, build=b, recommended=is_recommended)
+            meta_build = PaperMetaBuild.from_paper(
+                mc_version=mc_version, 
+                build=b, 
+                recommended=False
+            )
             if meta_build:
                 meta_builds.append(meta_build)
 
-        if meta_builds and not any(b.recommended for b in meta_builds):
-            meta_builds[0].recommended = True
+        meta_builds.reverse()
+
+        if meta_builds:
+            meta_builds[-1].recommended = True
         
         return cls(
             uid=uid,
