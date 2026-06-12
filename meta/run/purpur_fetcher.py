@@ -99,7 +99,7 @@ class PurpurFetcher(BaseFetcher):
                 return build_num, PurpurBuildInfo(**raw_info)
 
         build_tasks = await asyncio.gather(*[fetch_build_info(b) for b in response.all_builds])
-        builds_with_info = [(num, info) for num, info in build_tasks if info]
+        builds_with_info = [item for item in build_tasks if item is not None]
 
         builds_with_info.sort(key=lambda x: x[0], reverse=True)
 
