@@ -59,7 +59,6 @@ class PaperMetaBuild(MetaBuild):
                 sha256=build.application.sha256
             )
         )
-
 class PaperMetaVersionFile(MetaVersionFile):
     builds: list[PaperMetaBuild]
 
@@ -78,11 +77,9 @@ class PaperMetaVersionFile(MetaVersionFile):
             )
             if meta_build:
                 meta_builds.append(meta_build)
-
-        meta_builds.reverse()
-
+        
         if meta_builds:
-            meta_builds[-1].recommended = True
+            meta_builds[0].recommended = True 
         
         return cls(
             uid=uid,
