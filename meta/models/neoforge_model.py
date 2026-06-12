@@ -51,7 +51,8 @@ def _mc_version_from_neoforge(version: str) -> str:
         return f"{parts[0]}.{parts[1]}"
     else:
         if len(parts) >= 2:
-            return f"1.{parts[0]}.{parts[1]}"
+            minor = int(parts[1])
+            return f"1.{parts[0]}.{parts[1]}" if minor != 0 else f"1.{parts[0]}"
         return f"1.{parts[0]}"
 
 class NeoForgeRawBuild(BaseModel):
