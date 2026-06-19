@@ -50,7 +50,7 @@ class NeoForgeFetcher(BaseFetcher):
         version_entries: list[NeoForgeMetaVersionEntry] = []
         recommended: list[str] = []
 
-        for raw_build in raw_builds:
+        for raw_build in reversed(raw_builds):
             mc_version = raw_build.mc_version
             version_file = NeoForgeMetaVersionFile.from_raw(raw=raw_build, uid=self.platform_uid)
 

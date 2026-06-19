@@ -81,7 +81,7 @@ class ForgeFetcher(BaseFetcher):
         version_entries: list[ForgeMetaVersionEntry] = []
         recommended: list[str] = []
 
-        for raw in raw_builds:
+        for raw in reversed(raw_builds):
             mc_version = raw.mc_version
             version_file = ForgeMetaVersionFile.from_raw(raw=raw, uid=self.platform_uid)
 
