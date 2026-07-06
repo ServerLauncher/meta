@@ -71,8 +71,6 @@ class NeoForgeFetcher(BaseFetcher):
             
         logger.info(f"[NeoForge] Processed {len(version_entries)} MC versions")
 
-        version_entries.reverse()
-
         package = NeoForgeMetaVersion(
             uid=self.platform_uid,
             name=self.platform_name,
