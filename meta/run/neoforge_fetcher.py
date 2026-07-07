@@ -50,7 +50,7 @@ class NeoForgeFetcher(BaseFetcher):
         version_entries: list[NeoForgeMetaVersionEntry] = []
         recommended: list[str] = []
 
-        for raw_build in reversed(raw_builds):
+        for raw_build in raw_builds:
             mc_version = raw_build.mc_version
             version_file = NeoForgeMetaVersionFile.from_raw(raw=raw_build, uid=self.platform_uid)
 
@@ -68,6 +68,13 @@ class NeoForgeFetcher(BaseFetcher):
             
             if raw_build.recommended and mc_version not in recommended:
                 recommended.append(mc_version)
+        
+        import re
+        for version_file in version_files.values():
+            version_file.builds.sort(
+                key=lambda b: tuple(map(int, re.findall(r"\d+", b.build))),
+                reverse=True,
+            )
             
         logger.info(f"[NeoForge] Processed {len(version_entries)} MC versions")
 
@@ -75,7 +82,7 @@ class NeoForgeFetcher(BaseFetcher):
             uid=self.platform_uid,
             name=self.platform_name,
             recommended=recommended,
-            versions=version_entries,
+            versions=reversed(version_entries)
         )
 
         return package, version_files
