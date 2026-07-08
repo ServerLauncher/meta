@@ -13,7 +13,7 @@ from meta.models.paper_model import (
     PaperMetaVersion
 )
 
-URL = "https://api.papermc.io/v2/projects/paper"
+URL = "https://fill.papermc.io/v3/projects/paper"
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -35,8 +35,12 @@ class PaperFetcher(BaseFetcher):
             return None
 
         project = PaperProjectResponse(**raw_project)
+
+        all_versions = []
+        for group in project.versions.values():
+            all_versions.extend(group)
         
-        stable_versions = [v for v in project.versions if self._is_stable_version(v)]
+        stable_versions = [v for v in all_versions if self._is_stable_version(v)]
         
         mc_versions = sorted(
             stable_versions,
@@ -64,7 +68,7 @@ class PaperFetcher(BaseFetcher):
                 logger.debug(f"[Paper] Skipping {mc_version} (no builds)")
                 continue
 
-            latest_build = max(int(b.build) for b in version_file.builds) if version_file.builds else 0
+            latest_build = version_file.builds[0].build if version_file.builds else "0"
 
             version_files[mc_version] = version_file
 
@@ -97,6 +101,9 @@ class PaperFetcher(BaseFetcher):
         if not raw:
             logger.error(f"[Paper] Failed to fetch builds for {mc_version}")
             return None
+        
+        if isinstance(raw, list):
+            raw = {"builds": raw}
         
         response = PaperBuildsResponse(**raw)
 

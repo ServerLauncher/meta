@@ -3,42 +3,58 @@ from typing import Optional
 
 from . import MetaDownload, MetaBuild, MetaVersionEntry, MetaPackage, MetaVersionFile
 
-class PaperApplicationDownload(BaseModel):
-    name: str
+class PaperChecksum(BaseModel):
     sha256: str
 
-class PaperBuildDownloads(BaseModel):
-    application: Optional[PaperApplicationDownload] = None
 
-class PapeeChanges(BaseModel):
-    commit: str
-    summary: str
+class PaperApplicationDownload(BaseModel):
+    name: str
+    checksums: PaperChecksum
+    size: int
+    url: str
+
+
+class PaperBuildDownloads(BaseModel):
+    application: Optional[PaperApplicationDownload] = Field(
+        alias="server:default",
+        default=None
+    )
+
+    model_config = {
+        "populate_by_name": True
+    }
+
+
+class PaperCommit(BaseModel):
+    sha: str
+    time: str
     message: str
 
+
 class PaperBuild(BaseModel):
-    build: int
+    id: int
     time: str
     channel: str
-    promoted: bool
-    changes: list[PapeeChanges] = []
+
+    commits: list[PaperCommit] = []
+
     downloads: PaperBuildDownloads
+
+    @property
+    def build(self) -> int:
+        return self.id
 
     @property
     def application(self) -> Optional[PaperApplicationDownload]:
         return self.downloads.application
     
-    @property
-    def is_stable(self) -> bool:
-        return self.channel == "STABLE" or self.promoted
-    
 class PaperBuildsResponse(BaseModel):
-    version: str
     builds:  list[PaperBuild]
 
     model_config = {"extra": "ignore"}
 
 class PaperProjectResponse(BaseModel):
-    versions: list[str]
+    versions: dict[str, list[str]]
 
     model_config = {"extra": "ignore"}
 
@@ -55,8 +71,8 @@ class PaperMetaBuild(MetaBuild):
             recommended=recommended,
             download=MetaDownload(
                 name=build.application.name,
-                url=f"https://api.papermc.io/v2/projects/paper/versions/{mc_version}/builds/{build.build}/downloads/{build.application.name}",
-                sha256=build.application.sha256
+                url=build.application.url,
+                sha256=build.application.checksums.sha256
             )
         )
 class PaperMetaVersionFile(MetaVersionFile):
@@ -66,7 +82,7 @@ class PaperMetaVersionFile(MetaVersionFile):
     def from_paper_builds(cls, mc_version: str, builds: list[PaperBuild], uid: str) -> "PaperMetaVersionFile":
         meta_builds = []
         
-        for b in reversed(builds):
+        for b in builds:
             if not b.application:
                 continue
 
