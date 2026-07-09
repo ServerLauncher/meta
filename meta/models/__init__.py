@@ -6,6 +6,7 @@ class MetaDownload(BaseModel):
     url: str
     sha1: Optional[str] = None
     sha256: Optional[str] = None
+    md5: Optional[str] = None
 
     model_config = {"populate_by_name": True}
 

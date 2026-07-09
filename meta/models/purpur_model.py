@@ -63,7 +63,7 @@ class PurpurMetaBuild(MetaBuild):
             download=MetaDownload(
                 name=f"purpur-{mc_version}-{build_num}.jar",
                 url=f"https://api.purpurmc.org/v2/purpur/{mc_version}/{build_num}/download",
-                sha1=build_info.md5
+                md5=build_info.md5
             )
         )
 
